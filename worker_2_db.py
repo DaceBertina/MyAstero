@@ -89,52 +89,52 @@ if __name__ == "__main__":
 	with open('./log_worker.yaml', 'r') as stream:
 	    log_config = yaml.safe_load(stream)
 
-	logging.config.dictConfig(log_config)
+logging.config.dictConfig(log_config)
 
 	# Creating logger
-	logger = logging.getLogger('root')
+logger = logging.getLogger('root')
 
-	logger.info('Asteroid processing service')
+logger.info('Asteroid processing service')
 
 	# Initiating and reading config values
-	logger.info('Loading configuration from file')
+logger.info('Loading configuration from file')
 
-	try:
-		config = ConfigParser()
-		config.read('config.ini')
+try:
+	config = ConfigParser()
+	config.read('config.ini')
 
-		nasa_api_key = config.get('nasa', 'api_key')
-		nasa_api_url = config.get('nasa', 'api_url')
+	nasa_api_key = config.get('nasa', 'api_key')
+	nasa_api_url = config.get('nasa', 'api_url')
 
-		mysql_config_mysql_host = config.get('mysql_config', 'mysql_host')
-		mysql_config_mysql_db = config.get('mysql_config', 'mysql_db')
-		mysql_config_mysql_user = config.get('mysql_config', 'mysql_user')
-		mysql_config_mysql_pass = config.get('mysql_config', 'mysql_pass')
+	mysql_config_mysql_host = config.get('mysql_config', 'mysql_host')
+	mysql_config_mysql_db = config.get('mysql_config', 'mysql_db')
+	mysql_config_mysql_user = config.get('mysql_config', 'mysql_user')
+	mysql_config_mysql_pass = config.get('mysql_config', 'mysql_pass')
 
-	except:
-		logger.exception('')
-	logger.info('DONE')
+except:
+	logger.exception('')
+logger.info('DONE')
 
-	connection = None
-	connected = False
+connection = None
+connected = False
 
-	init_db()
+init_db()
 
-	# Opening connection to mysql DB
-	logger.info('Connecting to MySQL DB')
-	try:
-		# connection = mysql.connector.connect(host=mysql_config_mysql_host, database=mysql_config_mysql_db, user=mysql_config_mysql_user, password=mysql_config_mysql_pass)
-		cursor = get_cursor()
-		if connection.is_connected():
-			db_Info = connection.get_server_info()
-			logger.info('Connected to MySQL database. MySQL Server version on ' + str(db_Info))
-			cursor = connection.cursor()
-			cursor.execute("select database();")
-			record = cursor.fetchone()
-			logger.debug('Your connected to - ' + str(record))
-			connection.commit()
-	except Error as e :
-		logger.error('Error while connecting to MySQL' + str(e))
+# Opening connection to mysql DB
+logger.info('Connecting to MySQL DB')
+try:
+	# connection = mysql.connector.connect(host=mysql_config_mysql_host, database=mysql_config_mysql_db, user=mysql_config_mysql_user, password=mysql_config_mysql_pass)
+	cursor = get_cursor()
+	if connection.is_connected():
+		db_Info = connection.get_server_info()
+		logger.info('Connected to MySQL database. MySQL Server version on ' + str(db_Info))
+		cursor = connection.cursor()
+		cursor.execute("select database();")
+		record = cursor.fetchone()
+		logger.debug('Your connected to - ' + str(record))
+		connection.commit()
+except Error as e :
+	logger.error('Error while connecting to MySQL' + str(e))
 
 	# Getting todays date
 	dt = datetime.now()
