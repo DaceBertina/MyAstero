@@ -93,6 +93,14 @@ def push_asteroids_arrays_to_db(request_day, ast_array, hazardous):
 		else:
 			logger.debug("Asteroid already IN DB")
 
+def get_todays_date():
+	dt = datetime.now()
+	todays_date = str(dt.year) + "-" + str(dt.month).zfill(2) + "-" + str(dt.day).zfill(2) 
+	print('Print date:',todays_date)
+	norm_date = str(todays_date)
+	logger.debug("Generating today's date: " + norm_date)
+	return todays_date
+
 #Code execution starts:
 if __name__ == "__main__":
 
@@ -119,9 +127,9 @@ if __name__ == "__main__":
 		logger.error('Error while connecting to MySQL' + str(e))
 
 		# Getting todays date which will be passed to the request
-	dt = datetime.now()
-	request_date = str(dt.year) + "-" + str(dt.month).zfill(2) + "-" + str(dt.day).zfill(2)  
-	logger.debug("Generated today's date: " + str(request_date))
+	 
+	request_date = get_todays_date()
+	logger.debug("Checking today's date: " + str(request_date))
 
 
 		# Requesting info from NASA API
@@ -137,7 +145,7 @@ if __name__ == "__main__":
 	if r.status_code == 200:
 
 		json_data = json.loads(r.text) # Parsing response as Python dictionary
-
+		# logger.info(json_data)
 		ast_safe = [] # Python array for safe asteroids
 		ast_hazardous = [] # Python array for hazardous asteroids
 
@@ -146,7 +154,8 @@ if __name__ == "__main__":
 			logger.info("Asteroid count today: " + str(ast_count))
 
 			if ast_count > 0:
-				for val in json_data['near_earth_objects'][request_date]:
+				for val in json_data['near_earth_objects'][request_date]: # 'near_earth_objects' satur atribūtu request_date
+					logger.info(val)
 					if 'name' and 'nasa_jpl_url' and 'estimated_diameter' and 'is_potentially_hazardous_asteroid' and 'close_approach_data' in val:
 						# Introducing variables, assigning values from NASA API response:
 						tmp_ast_name = val['name']
