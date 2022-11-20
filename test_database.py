@@ -1,5 +1,9 @@
 from naked import *
-from datetime import datetime
+from configparser import ConfigParser
+from mysql.connector import Error
+import logging
+import logging.config
+import mysql.connector
 
 def init_db():
 	global connection
@@ -17,24 +21,33 @@ def get_cursor():
 	return connection.cursor()
 
 # Testing if database migration files had been run
+	    
 def test_database():
-    print("Testing if database migration files had been run:")
-    print("----------")
-    print("Testing function: test_database()")
-    query = cursor.execute('SELECT count(*) FROM migrations WHERE id>0')
-    try :
-        assert query > 0;
-    except Error as e :
-	    logger.error('Error while connecting to MySQL' + str(e)) 
+	print("Testing if database migration files had been run:")
+	print("----------")
+	print("Testing function: test_database()")
+	init_db()
+	try:
+		config = ConfigParser()
+		config.read('config.ini')
+		
+		mysql_config_mysql_host = config.get('mysql_config', 'mysql_host')
+		mysql_config_mysql_db = config.get('mysql_config', 'mysql_db')
+		mysql_config_mysql_user = config.get('mysql_config', 'mysql_user')
+		mysql_config_mysql_pass = config.get('mysql_config', 'mysql_pass')
 
-def mysql_check_if_ast_exists_in_db(request_day, ast_id):
-	records = []
+	except:
+		logger.exception('')
+	logger.info('Connection to MySQL has been done.')
+
 	cursor = get_cursor()
+	query = 0
 	try:
 		cursor = connection.cursor()
-		result  = cursor.execute("SELECT count(*) FROM ast_daily WHERE `create_date` = '" + str(request_day) + "' AND `ast_id` = '" + str(ast_id) + "'")
-		records = cursor.fetchall()
-		connection.commit()
+		query  = cursor.execute('SELECT count(*) FROM migrations WHERE id>0')
+		connection.commit()	
+		assert query > 0;
+		print('Assertion was successful.') # If we use pytest and it's successful this printout does not execute, for that purpose we need if/else
 	except Error as e :
-		logger.error("SELECT count(*) FROM ast_daily WHERE `create_date` = '" + str(request_day) + "' AND `ast_id` = '" + str(ast_id) + "'")
-		logger.error('Problem checking if asteroid exists: ' + str(e))
+		logger.error('Error while executing query: ' + str(e))
+	
