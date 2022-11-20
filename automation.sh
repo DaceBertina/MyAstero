@@ -40,10 +40,17 @@ echo "-------"
 echo "Running config tests." 
 $python_exec_loc test_config.py
 if [ $? -eq 0 ]; then echo "OK"; else echo "Config test failed."; exit 1; fi
+
 echo "-------"
 echo "Running date format test."
 $python_exec_loc test_astero.py
-if [ $? -eq 0 ]; then echo "OK"; else echo "Config test failed."; exit 1; fi
+if [ $? -eq 0 ]; then echo "OK"; else echo "Date format test failed."; exit 1; fi
+
+echo "-------"
+echo "Running database test."
+$python_exec_loc test_database.py
+if [ $? -eq 0 ]; then echo "OK"; else echo "Database test failed."; exit 1; fi
+
 
 echo "-------"
 echo "This is the end of our automation." 
