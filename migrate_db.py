@@ -153,7 +153,7 @@ else:
 
 migrations_list = []
 # Reading all migration file names into an array
-cur_dir = os. getcwd()
+cur_dir = os.getcwd()
 migrations_files_list = os.listdir(cur_dir + "/migrations/")
 for f_name in migrations_files_list:
 	if f_name.endswith('.sql'):
