@@ -1,5 +1,7 @@
 Repozitorijs programmas kodam informācijas iegūšanai no NASA API par asteorīdiem, saglabāšanai datubāzē (optional - izvietošanai Twitter).
 
+The source code file: naked.py.
+
 To run the app, it requires a valid config and logging config file. You can use the templates, but update them with your settings (at least api key).
 
 cp config.ini.template config.ini
