@@ -1,12 +1,12 @@
 # Importing all the necessary libraries
 import requests # To send requests to the API endpoints
-import json # To parse received json data into Python structures
-import datetime
+import json # To parse received data from NASA API into json structures
+import datetime # To generate datetime
 import time
 import yaml # To write and read logging configuration files
-import logging
+import logging # For getting loggers
 import logging.config
-import mysql.connector
+import mysql.connector # To connect to database
 
 from datetime import datetime
 from configparser import ConfigParser
@@ -43,6 +43,7 @@ except:
 	logger.exception('')
 logger.info('DONE')
 
+# Creating/declaring all the necessary functions
 def init_db():
 	global connection
 	connection = mysql.connector.connect(host=mysql_config_mysql_host, database=mysql_config_mysql_db, user=mysql_config_mysql_user, password=mysql_config_mysql_pass)
@@ -134,7 +135,7 @@ if __name__ == "__main__":
 
 		# Requesting info from NASA API
 	logger.debug("Request url: " + str(nasa_api_url + "rest/v1/feed?start_date=" + request_date + "&end_date=" + request_date + "&api_key=" + nasa_api_key))
-	r = requests.get(nasa_api_url + "rest/v1/feed?start_date=" + request_date + "&end_date=" + request_date + "&api_key=" + nasa_api_key)
+	r = requests.get(nasa_api_url + "rest/v1/feed?start_date=" + request_date + "&end_date=" + request_date + "&api_key=" + nasa_api_key)# It is an actual request to NASA API
 
 		# Printing response data
 	logger.debug("Response status code: " + str(r.status_code))
@@ -144,16 +145,16 @@ if __name__ == "__main__":
 		# If we are getting a valid response:
 	if r.status_code == 200:
 
-		json_data = json.loads(r.text) # Parsing response as Python dictionary
-		# logger.info(json_data)
+		json_data = json.loads(r.text) # Parsing NASA API response as json structure. Json structure is described in the Readme.md file
+		# logger.info(json_data)--> if uncomment json structures are provided
 		ast_safe = [] # Python array for safe asteroids
 		ast_hazardous = [] # Python array for hazardous asteroids
 
-		if 'element_count' in json_data:
+		if 'element_count' in json_data: # Check if the response is valid for processing
 			ast_count = int(json_data['element_count'])
 			logger.info("Asteroid count today: " + str(ast_count))
 
-			if ast_count > 0:
+			if ast_count > 0: # Check if the 'element_count' is not 0
 				for val in json_data['near_earth_objects'][request_date]: # 'near_earth_objects' satur atribūtu request_date
 					logger.info(val)
 					if 'name' and 'nasa_jpl_url' and 'estimated_diameter' and 'is_potentially_hazardous_asteroid' and 'close_approach_data' in val:
@@ -220,19 +221,19 @@ if __name__ == "__main__":
 
 		if len(ast_hazardous) > 0:
 
-			ast_hazardous.sort(key = lambda x: x[4], reverse=False)
+			ast_hazardous.sort(key = lambda x: x[4], reverse=False)# x[4] indicates that the value for sorting is retrieved from json structure's 4th address = 'TS of close approach'
 
 			logger.info("Today's possible apocalypse (asteroid impact on earth) times:")
 			for asteroid in ast_hazardous:
 				logger.info(str(asteroid[6]) + " " + str(asteroid[0]) + " " + " | more info: " + str(asteroid[1]))
 
-			ast_hazardous.sort(key = lambda x: x[8], reverse=False)
+			ast_hazardous.sort(key = lambda x: x[8], reverse=False)# x[8] indicates that the value for sorting is retrieved from json structure's 8th address = 'Miss distance of asteroid'
 			logger.info("Closest passing distance is for: " + str(ast_hazardous[0][0]) + " at: " + str(int(ast_hazardous[0][8])) + " km | more info: " + str(ast_hazardous[0][1]))
-			push_asteroids_arrays_to_db(request_date, ast_hazardous, 1)
+			push_asteroids_arrays_to_db(request_date, ast_hazardous, 1)# Invoke the function(def) to push this array to db
 		else:
 			logger.info("No asteroids close passing earth today")
 
 		if len(ast_safe) > 0:
-			push_asteroids_arrays_to_db(request_date, ast_safe, 0)
+			push_asteroids_arrays_to_db(request_date, ast_safe, 0)# Invoke the function(def) to push this array to db
 	else:
 		logger.error("Unable to get response from API. Response code: " + str(r.status_code) + " | content: " + str(r.text))
