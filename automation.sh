@@ -1,4 +1,7 @@
 #!/bin/bash
+
+sec_secret_storage_loc="/SecretFiles"
+
 echo "Script for preparing the development environment"
 echo "-------"
 
@@ -6,7 +9,8 @@ echo "Checking if config.ini exists in the current working directory -->"
 if test -f "config.ini"; then
         echo "exists"
 else
-        echo "Copying config file from .... [should create secret dir for config files]"
+        echo "Copying config file from dedicated secret files directory"
+	cp $HOME$sec_secret_storage_loc/config.ini .
         if [ $? -eq 0 ]; then echo "OK"; else "Problem copying config.ini file"; exit 1; fi
 fi
 echo "-------"
