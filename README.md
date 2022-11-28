@@ -1,6 +1,10 @@
-Repozitorijs programmas kodam informācijas iegūšanai no NASA API par asteorīdiem, saglabāšanai datubāzē (optional - izvietošanai Twitter).
+App for requesting asteroid data that could possibly hit the earth at the day of execution of application.
+The output will be a timetable of possible apocalypse times and the closest asteroid flying by.
+Optional - posting on the Twitter, not enabled for now.
 
 The source code file: naked.py.
+workerp.py -> App reading nasa api, logging data.
+worker_2_db.py -> App for reading nasa api, logging, data, writing values to db.
 
 To run the app, it requires a valid config and logging config file. You can use the templates, but update them with your settings (at least api key).
 
